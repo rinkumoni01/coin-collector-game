@@ -2,8 +2,8 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Coin Collector</title>
+<meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=no">
+<title>Coin Collector Adventure</title>
 
 <style>
 *{box-sizing:border-box}
@@ -13,6 +13,7 @@ body{
   overflow:hidden;
   font-family:Arial,sans-serif;
   touch-action:none;
+  background:#7dd3fc;
 }
 
 #game{
@@ -20,128 +21,241 @@ body{
   height:100vh;
   position:relative;
   overflow:hidden;
-  background:linear-gradient(#7dd3fc 70%,#4caf24 70%);
+  background:
+    linear-gradient(#67c7f2 0%,#9ee8ff 65%,#55b82b 65%,#39a51f 100%);
 }
 
+/* Clouds */
+.cloud{
+  position:absolute;
+  width:100px;
+  height:35px;
+  background:white;
+  border-radius:50px;
+  opacity:.8;
+}
+
+.cloud:before,.cloud:after{
+  content:"";
+  position:absolute;
+  background:white;
+  border-radius:50%;
+}
+
+.cloud:before{
+  width:45px;height:45px;
+  left:15px;top:-20px;
+}
+
+.cloud:after{
+  width:55px;height:55px;
+  right:12px;top:-25px;
+}
+
+.c1{top:110px;left:5%}
+.c2{top:180px;right:5%;transform:scale(.8)}
+
+/* Trees */
+.tree{
+  position:absolute;
+  bottom:30%;
+  font-size:65px;
+  z-index:1;
+}
+
+.t1{left:3%}
+.t2{right:3%}
+.t3{left:20%;font-size:45px}
+.t4{right:20%;font-size:45px}
+
+/* Road */
+#road{
+  position:absolute;
+  bottom:0;
+  width:100%;
+  height:35%;
+  background:#4caf24;
+  border-top:5px solid #75d34c;
+}
+
+/* HUD */
+#score,#level,#lives,#high{
+  position:absolute;
+  top:12px;
+  background:white;
+  padding:8px 11px;
+  border-radius:14px;
+  font-size:17px;
+  font-weight:bold;
+  z-index:20;
+  box-shadow:0 3px 8px #0003;
+}
+
+#score{left:7px}
+#level{left:50%;transform:translateX(-50%)}
+#lives{right:7px}
+#high{
+  top:62px;
+  left:50%;
+  transform:translateX(-50%);
+  font-size:14px;
+}
+
+/* Character */
+#player{
+  position:absolute;
+  width:58px;
+  height:70px;
+  left:50%;
+  bottom:28%;
+  transform:translateX(-50%);
+  z-index:10;
+  text-align:center;
+}
+
+.head{
+  width:42px;
+  height:42px;
+  margin:auto;
+  background:#ffd0a6;
+  border:3px solid #333;
+  border-radius:50%;
+  position:relative;
+}
+
+.head:before{
+  content:"";
+  position:absolute;
+  width:35px;
+  height:12px;
+  background:#4b2e1f;
+  top:-5px;
+  left:1px;
+  border-radius:50%;
+}
+
+.body{
+  width:45px;
+  height:30px;
+  background:#3498db;
+  border:3px solid #333;
+  border-radius:15px 15px 8px 8px;
+  margin:auto;
+}
+
+/* Coin */
+.coin{
+  position:absolute;
+  width:32px;
+  height:32px;
+  background:radial-gradient(circle,#fff38a 5%,#ffd700 40%,#f39c12 100%);
+  border:4px solid #f39c12;
+  border-radius:50%;
+  z-index:6;
+  box-shadow:0 2px 5px #0004;
+}
+
+/* Enemy */
+.enemy{
+  position:absolute;
+  width:52px;
+  height:52px;
+  background:#e53935;
+  border:4px solid white;
+  border-radius:14px;
+  text-align:center;
+  line-height:44px;
+  font-size:29px;
+  z-index:7;
+  box-shadow:0 3px 7px #0005;
+}
+
+/* Message */
+#message{
+  position:absolute;
+  top:42%;
+  width:100%;
+  text-align:center;
+  font-size:31px;
+  font-weight:bold;
+  color:white;
+  text-shadow:2px 3px 5px #000;
+  z-index:30;
+  padding:10px;
+}
+
+#restart{
+  display:none;
+  position:absolute;
+  top:54%;
+  left:50%;
+  transform:translateX(-50%);
+  padding:15px 30px;
+  border:0;
+  border-radius:15px;
+  background:white;
+  font-size:21px;
+  font-weight:bold;
+  z-index:40;
+}
+
+/* Controls */
+#controls{
+  position:absolute;
+  bottom:18px;
+  width:100%;
+  display:flex;
+  justify-content:center;
+  gap:30px;
+  z-index:50;
+}
+
+.control{
+  width:90px;
+  height:65px;
+  border:3px solid white;
+  border-radius:20px;
+  background:#ffffffdd;
+  font-size:34px;
+  box-shadow:0 4px 8px #0004;
+}
+
+.control:active{
+  transform:scale(.92);
+  background:#ddd;
+}
+
+/* Start menu */
 #menu{
   position:absolute;
   inset:0;
   background:linear-gradient(#38bdf8,#22c55e);
+  z-index:100;
   display:flex;
   flex-direction:column;
   justify-content:center;
   align-items:center;
-  z-index:100;
   color:white;
   text-align:center;
 }
 
 #menu h1{
-  font-size:42px;
+  font-size:38px;
   margin:10px;
-  text-shadow:2px 3px 4px #555;
+  text-shadow:2px 3px 5px #555;
 }
 
 #menu p{
-  font-size:20px;
+  font-size:18px;
 }
 
-#startBtn,#restartBtn{
-  padding:15px 30px;
+#start{
+  padding:16px 32px;
+  border:0;
+  border-radius:16px;
+  background:white;
   font-size:22px;
   font-weight:bold;
-  border:0;
-  border-radius:15px;
-  background:white;
-}
-
-#score,#lives,#level{
-  position:absolute;
-  top:15px;
-  background:white;
-  padding:9px 13px;
-  border-radius:12px;
-  font-size:18px;
-  font-weight:bold;
-  z-index:10;
-}
-
-#score{left:10px}
-#level{left:50%;transform:translateX(-50%)}
-#lives{right:10px}
-
-#player{
-  position:absolute;
-  width:52px;
-  height:52px;
-  background:#3498db;
-  border:4px solid white;
-  border-radius:50%;
-  bottom:30%;
-  left:50%;
-  transform:translateX(-50%);
-  z-index:5;
-}
-
-.coin{
-  position:absolute;
-  width:30px;
-  height:30px;
-  background:#ffd700;
-  border:4px solid #f39c12;
-  border-radius:50%;
-  z-index:4;
-}
-
-.enemy{
-  position:absolute;
-  width:48px;
-  height:48px;
-  background:#e74c3c;
-  border:4px solid white;
-  border-radius:10px;
-  text-align:center;
-  line-height:40px;
-  font-size:28px;
-  z-index:4;
-}
-
-#message{
-  position:absolute;
-  top:40%;
-  width:100%;
-  text-align:center;
-  font-size:34px;
-  font-weight:bold;
-  color:white;
-  text-shadow:2px 2px 5px black;
-  z-index:20;
-}
-
-#restartBtn{
-  display:none;
-  position:absolute;
-  top:52%;
-  left:50%;
-  transform:translateX(-50%);
-  z-index:30;
-}
-
-#controls{
-  position:absolute;
-  bottom:15px;
-  width:100%;
-  text-align:center;
-  z-index:20;
-}
-
-.control{
-  width:70px;
-  height:55px;
-  margin:5px;
-  font-size:25px;
-  border:0;
-  border-radius:15px;
 }
 </style>
 </head>
@@ -150,125 +264,166 @@ body{
 
 <div id="game">
 
-  <div id="menu">
-    <h1>🪙 COIN COLLECTOR</h1>
-    <p>Collect 10 coins to complete each level!</p>
-    <button id="startBtn" onclick="startGame()">▶️ START GAME</button>
-  </div>
+<div class="cloud c1"></div>
+<div class="cloud c2"></div>
 
-  <div id="score">🪙 Coins: 0</div>
-  <div id="level">⭐ Level 1</div>
-  <div id="lives">❤️❤️❤️</div>
+<div class="tree t1">🌳</div>
+<div class="tree t2">🌳</div>
+<div class="tree t3">🌲</div>
+<div class="tree t4">🌲</div>
 
-  <div id="player"></div>
+<div id="road"></div>
 
-  <div id="message"></div>
+<div id="menu">
+  <h1>🪙 COIN ADVENTURE</h1>
+  <p>Collect coins and escape the enemies!</p>
+  <button id="start" onclick="startGame()">▶️ START GAME</button>
+</div>
 
-  <button id="restartBtn" onclick="restartGame()">🔄 RESTART</button>
+<div id="score">🪙 0</div>
+<div id="level">⭐ Level 1</div>
+<div id="lives">❤️❤️❤️</div>
+<div id="high">🏆 High Score: 0</div>
 
-  <div id="controls">
-    <button class="control" onclick="moveLeft()">⬅️</button>
-    <button class="control" onclick="moveRight()">➡️</button>
-  </div>
+<div id="player">
+  <div class="head"></div>
+  <div class="body"></div>
+</div>
+
+<div id="message"></div>
+
+<button id="restart" onclick="location.reload()">🔄 RESTART</button>
+
+<div id="controls">
+  <button class="control" onclick="moveLeft()">⬅️</button>
+  <button class="control" onclick="moveRight()">➡️</button>
+</div>
 
 </div>
 
 <script>
 
 let player=document.getElementById("player");
-let game=document.getElementById("game");
-let scoreText=document.getElementById("score");
-let livesText=document.getElementById("lives");
-let levelText=document.getElementById("level");
+let scoreBox=document.getElementById("score");
+let levelBox=document.getElementById("level");
+let livesBox=document.getElementById("lives");
+let highBox=document.getElementById("high");
 let message=document.getElementById("message");
 let menu=document.getElementById("menu");
-let restartBtn=document.getElementById("restartBtn");
+let restart=document.getElementById("restart");
 
 let playerX=50;
 let score=0;
 let lives=3;
 let level=1;
-let gameRunning=false;
-let targetCoins=10;
+let playing=false;
+let highScore=Number(localStorage.getItem("coinHighScore")||0);
 
-function updatePlayer(){
+highBox.innerText="🏆 High Score: "+highScore;
+
+/* Sound */
+function sound(type){
+
+  let audio=new (window.AudioContext||window.webkitAudioContext)();
+  let osc=audio.createOscillator();
+  let gain=audio.createGain();
+
+  osc.connect(gain);
+  gain.connect(audio.destination);
+
+  if(type==="coin"){
+    osc.frequency.value=700;
+  }else{
+    osc.frequency.value=150;
+  }
+
+  gain.gain.value=.12;
+  osc.start();
+
+  setTimeout(()=>{
+    osc.stop();
+    audio.close();
+  },120);
+}
+
+/* Movement */
+function moveLeft(){
+  if(!playing)return;
+  playerX-=8;
+  if(playerX<5)playerX=5;
   player.style.left=playerX+"%";
 }
 
-function moveLeft(){
-  if(!gameRunning)return;
-
-  playerX-=8;
-
-  if(playerX<5)playerX=5;
-
-  updatePlayer();
-}
-
 function moveRight(){
-  if(!gameRunning)return;
-
+  if(!playing)return;
   playerX+=8;
-
   if(playerX>95)playerX=95;
-
-  updatePlayer();
+  player.style.left=playerX+"%";
 }
 
-function updateLives(){
+/* Keyboard */
+document.addEventListener("keydown",e=>{
+  if(e.key==="ArrowLeft")moveLeft();
+  if(e.key==="ArrowRight")moveRight();
+});
 
-  let hearts="";
-
-  for(let i=0;i<lives;i++){
-    hearts+="❤️";
-  }
-
-  livesText.innerText=hearts;
-}
-
+/* Start */
 function startGame(){
 
   menu.style.display="none";
-  gameRunning=true;
+  playing=true;
 
   score=0;
   lives=3;
   level=1;
 
-  scoreText.innerText="🪙 Coins: 0";
-  levelText.innerText="⭐ Level 1";
-  message.innerText="";
-
-  updateLives();
+  updateHUD();
 }
 
+/* HUD */
+function updateHUD(){
+
+  scoreBox.innerText="🪙 "+score;
+  levelBox.innerText="⭐ Level "+level;
+
+  let hearts="";
+  for(let i=0;i<lives;i++) hearts+="❤️";
+
+  livesBox.innerText=hearts;
+
+  if(score>highScore){
+    highScore=score;
+    localStorage.setItem("coinHighScore",highScore);
+  }
+
+  highBox.innerText="🏆 High Score: "+highScore;
+}
+
+/* Coin */
 function createCoin(){
 
-  if(!gameRunning)return;
+  if(!playing)return;
 
   let coin=document.createElement("div");
-
   coin.className="coin";
 
-  coin.style.left=(Math.random()*90+5)+"%";
-  coin.style.top="5%";
+  coin.style.left=(Math.random()*88+5)+"%";
+  coin.style.top="0%";
 
-  game.appendChild(coin);
+  document.getElementById("game").appendChild(coin);
 
-  let y=5;
+  let y=0;
+  let speed=1.2+level*.25;
 
-  let speed=1.2+(level*0.2);
+  let timer=setInterval(()=>{
 
-  let fall=setInterval(function(){
-
-    if(!gameRunning){
+    if(!playing){
       coin.remove();
-      clearInterval(fall);
+      clearInterval(timer);
       return;
     }
 
     y+=speed;
-
     coin.style.top=y+"%";
 
     let a=coin.getBoundingClientRect();
@@ -282,61 +437,67 @@ function createCoin(){
     ){
 
       score++;
-
-      scoreText.innerText="🪙 Coins: "+score;
+      sound("coin");
+      updateHUD();
 
       coin.remove();
+      clearInterval(timer);
 
-      clearInterval(fall);
-
-      if(score>=targetCoins){
+      if(score>=10){
 
         if(level<3){
-          nextLevel();
+          level++;
+          score=0;
+
+          message.innerText="🚀 LEVEL "+level+"!";
+
+          updateHUD();
+
+          setTimeout(()=>{
+            message.innerText="";
+          },1200);
+
         }else{
-          winGame();
+          win();
         }
       }
     }
 
     if(y>100){
-
       coin.remove();
-      clearInterval(fall);
+      clearInterval(timer);
     }
 
   },50);
 }
 
+/* Enemy */
 function createEnemy(){
 
-  if(!gameRunning)return;
+  if(!playing)return;
 
   let enemy=document.createElement("div");
 
   enemy.className="enemy";
   enemy.innerText="👾";
 
-  enemy.style.left=(Math.random()*90+5)+"%";
-  enemy.style.top="5%";
+  enemy.style.left=(Math.random()*88+5)+"%";
+  enemy.style.top="0%";
 
-  game.appendChild(enemy);
+  document.getElementById("game").appendChild(enemy);
 
-  let y=5;
+  let y=0;
+  let speed=1.3+level*.35;
 
-  let speed=1.3+(level*0.35);
+  let timer=setInterval(()=>{
 
-  let fall=setInterval(function(){
-
-    if(!gameRunning){
-
+    if(!playing){
       enemy.remove();
-      clearInterval(fall);
+      clearInterval(timer);
       return;
     }
 
     y+=speed;
-
     enemy.style.top=y+"%";
 
     let a=enemy.getBoundingClientRect();
@@ -350,93 +511,43 @@ function createEnemy(){
     ){
 
       lives--;
-
-      updateLives();
+      sound("enemy");
+      updateHUD();
 
       enemy.remove();
+      clearInterval(timer);
 
-      clearInterval(fall);
-
-      if(lives<=0){
-
-        loseGame();
-      }
+      if(lives<=0)lose();
     }
 
     if(y>100){
-
       enemy.remove();
-      clearInterval(fall);
+      clearInterval(timer);
     }
 
   },50);
 }
 
-function nextLevel(){
+/* Win */
+function win(){
 
-  level++;
-
-  score=0;
-
-  scoreText.innerText="🪙 Coins: 0";
-  levelText.innerText="⭐ Level "+level;
-
-  message.innerText="🚀 LEVEL "+level+"!";
-
-  setTimeout(function(){
-
-    if(gameRunning){
-      message.innerText="";
-    }
-
-  },1200);
-}
-
-function winGame(){
-
-  gameRunning=false;
+  playing=false;
 
   message.innerText="🏆 YOU WIN ALL 3 LEVELS! 🎉";
-
-  restartBtn.style.display="block";
+  restart.style.display="block";
 }
 
-function loseGame(){
+/* Lose */
+function lose(){
 
-  gameRunning=false;
+  playing=false;
 
   message.innerText="💀 GAME OVER";
-
-  restartBtn.style.display="block";
+  restart.style.display="block";
 }
 
-function restartGame(){
-
-  location.reload();
-}
-
-/* Coins */
-
-setInterval(function(){
-
-  if(gameRunning){
-    createCoin();
-  }
-
-},900);
-
-/* Enemies */
-
-setInterval(function(){
-
-  if(gameRunning){
-    createEnemy();
-  }
-
-},1800);
-
-updatePlayer();
-updateLives();
+setInterval(createCoin,900);
+setInterval(createEnemy,1800);
 
 </script>
 
