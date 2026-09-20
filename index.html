@@ -1,1 +1,205 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Coin Collector</title>
 
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      overflow: hidden;
+      background: #87ceeb;
+      font-family: Arial, sans-serif;
+      touch-action: none;
+    }
+
+    #game {
+      width: 100vw;
+      height: 100vh;
+      position: relative;
+      overflow: hidden;
+      background: linear-gradient(#87ceeb 70%, #55a630 70%);
+    }
+
+    #player {
+      position: absolute;
+      width: 50px;
+      height: 50px;
+      background: #3498db;
+      border-radius: 50%;
+      bottom: 30%;
+      left: 50%;
+      transform: translateX(-50%);
+      border: 4px solid white;
+    }
+
+    .coin {
+      position: absolute;
+      width: 30px;
+      height: 30px;
+      background: gold;
+      border: 4px solid #f39c12;
+      border-radius: 50%;
+    }
+
+    #score {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      background: white;
+      padding: 10px 15px;
+      border-radius: 10px;
+      font-size: 20px;
+      font-weight: bold;
+      z-index: 10;
+    }
+
+    #message {
+      position: absolute;
+      top: 45%;
+      width: 100%;
+      text-align: center;
+      font-size: 30px;
+      font-weight: bold;
+      color: white;
+      text-shadow: 2px 2px 4px black;
+    }
+
+    #controls {
+      position: absolute;
+      bottom: 20px;
+      width: 100%;
+      text-align: center;
+      z-index: 20;
+    }
+
+    button {
+      width: 70px;
+      height: 60px;
+      margin: 5px;
+      font-size: 28px;
+      border: none;
+      border-radius: 15px;
+      background: white;
+    }
+  </style>
+</head>
+
+<body>
+
+<div id="game">
+
+  <div id="score">Coins: 0</div>
+
+  <div id="player"></div>
+
+  <div id="message"></div>
+
+  <div id="controls">
+    <button onclick="moveLeft()">⬅️</button>
+    <button onclick="moveRight()">➡️</button>
+  </div>
+
+</div>
+
+<script>
+
+let player = document.getElementById("player");
+let game = document.getElementById("game");
+let scoreText = document.getElementById("score");
+let message = document.getElementById("message");
+
+let playerX = 50;
+let score = 0;
+
+function moveLeft() {
+  playerX -= 8;
+
+  if (playerX < 5) {
+    playerX = 5;
+  }
+
+  updatePlayer();
+}
+
+function moveRight() {
+  playerX += 8;
+
+  if (playerX > 95) {
+    playerX = 95;
+  }
+
+  updatePlayer();
+}
+
+function updatePlayer() {
+  player.style.left = playerX + "%";
+}
+
+function createCoin() {
+
+  let coin = document.createElement("div");
+
+  coin.className = "coin";
+
+  coin.style.left = (Math.random() * 90 + 5) + "%";
+  coin.style.top = "10%";
+
+  game.appendChild(coin);
+
+  let y = 10;
+
+  let fall = setInterval(function() {
+
+    y += 1;
+
+    coin.style.top = y + "%";
+
+    let coinRect = coin.getBoundingClientRect();
+    let playerRect = player.getBoundingClientRect();
+
+    if (
+      coinRect.left < playerRect.right &&
+      coinRect.right > playerRect.left &&
+      coinRect.top < playerRect.bottom &&
+      coinRect.bottom > playerRect.top
+    ) {
+
+      score++;
+
+      scoreText.innerText = "Coins: " + score;
+
+      coin.remove();
+
+      clearInterval(fall);
+
+      if (score >= 10) {
+        message.innerText = "🎉 YOU WIN! 🎉";
+      }
+    }
+
+    if (y > 100) {
+      coin.remove();
+      clearInterval(fall);
+    }
+
+  }, 50);
+}
+
+setInterval(function() {
+
+  if (score < 10) {
+    createCoin();
+  }
+
+}, 1200);
+
+</script>
+
+</body>
+</html>
