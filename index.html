@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Coin Collector</title>
 
 <style>
@@ -23,19 +23,52 @@ body{
   background:linear-gradient(#7dd3fc 70%,#4caf24 70%);
 }
 
-#score,#lives{
+#menu{
+  position:absolute;
+  inset:0;
+  background:linear-gradient(#38bdf8,#22c55e);
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+  z-index:100;
+  color:white;
+  text-align:center;
+}
+
+#menu h1{
+  font-size:42px;
+  margin:10px;
+  text-shadow:2px 3px 4px #555;
+}
+
+#menu p{
+  font-size:20px;
+}
+
+#startBtn,#restartBtn{
+  padding:15px 30px;
+  font-size:22px;
+  font-weight:bold;
+  border:0;
+  border-radius:15px;
+  background:white;
+}
+
+#score,#lives,#level{
   position:absolute;
   top:15px;
   background:white;
-  padding:10px 15px;
+  padding:9px 13px;
   border-radius:12px;
-  font-size:20px;
+  font-size:18px;
   font-weight:bold;
   z-index:10;
 }
 
-#score{left:15px}
-#lives{right:15px}
+#score{left:10px}
+#level{left:50%;transform:translateX(-50%)}
+#lives{right:10px}
 
 #player{
   position:absolute;
@@ -67,12 +100,15 @@ body{
   background:#e74c3c;
   border:4px solid white;
   border-radius:10px;
+  text-align:center;
+  line-height:40px;
+  font-size:28px;
   z-index:4;
 }
 
 #message{
   position:absolute;
-  top:42%;
+  top:40%;
   width:100%;
   text-align:center;
   font-size:34px;
@@ -82,37 +118,30 @@ body{
   z-index:20;
 }
 
-#restart{
+#restartBtn{
   display:none;
   position:absolute;
   top:52%;
   left:50%;
   transform:translateX(-50%);
-  padding:14px 28px;
-  font-size:20px;
-  font-weight:bold;
-  border:0;
-  border-radius:12px;
-  background:white;
-  z-index:20;
+  z-index:30;
 }
 
 #controls{
   position:absolute;
-  bottom:20px;
+  bottom:15px;
   width:100%;
   text-align:center;
   z-index:20;
 }
 
-button.control{
-  width:75px;
-  height:60px;
+.control{
+  width:70px;
+  height:55px;
   margin:5px;
-  font-size:28px;
+  font-size:25px;
   border:0;
   border-radius:15px;
-  background:white;
 }
 </style>
 </head>
@@ -121,14 +150,21 @@ button.control{
 
 <div id="game">
 
+  <div id="menu">
+    <h1>🪙 COIN COLLECTOR</h1>
+    <p>Collect 10 coins to complete each level!</p>
+    <button id="startBtn" onclick="startGame()">▶️ START GAME</button>
+  </div>
+
   <div id="score">🪙 Coins: 0</div>
+  <div id="level">⭐ Level 1</div>
   <div id="lives">❤️❤️❤️</div>
 
   <div id="player"></div>
 
   <div id="message"></div>
 
-  <button id="restart" onclick="restartGame()">🔄 RESTART</button>
+  <button id="restartBtn" onclick="restartGame()">🔄 RESTART</button>
 
   <div id="controls">
     <button class="control" onclick="moveLeft()">⬅️</button>
@@ -143,37 +179,75 @@ let player=document.getElementById("player");
 let game=document.getElementById("game");
 let scoreText=document.getElementById("score");
 let livesText=document.getElementById("lives");
+let levelText=document.getElementById("level");
 let message=document.getElementById("message");
-let restart=document.getElementById("restart");
+let menu=document.getElementById("menu");
+let restartBtn=document.getElementById("restartBtn");
 
 let playerX=50;
 let score=0;
 let lives=3;
-let gameOver=false;
+let level=1;
+let gameRunning=false;
+let targetCoins=10;
 
 function updatePlayer(){
   player.style.left=playerX+"%";
 }
 
 function moveLeft(){
-  if(gameOver)return;
+  if(!gameRunning)return;
+
   playerX-=8;
+
   if(playerX<5)playerX=5;
+
   updatePlayer();
 }
 
 function moveRight(){
-  if(gameOver)return;
+  if(!gameRunning)return;
+
   playerX+=8;
+
   if(playerX>95)playerX=95;
+
   updatePlayer();
+}
+
+function updateLives(){
+
+  let hearts="";
+
+  for(let i=0;i<lives;i++){
+    hearts+="❤️";
+  }
+
+  livesText.innerText=hearts;
+}
+
+function startGame(){
+
+  menu.style.display="none";
+  gameRunning=true;
+
+  score=0;
+  lives=3;
+  level=1;
+
+  scoreText.innerText="🪙 Coins: 0";
+  levelText.innerText="⭐ Level 1";
+  message.innerText="";
+
+  updateLives();
 }
 
 function createCoin(){
 
-  if(gameOver)return;
+  if(!gameRunning)return;
 
   let coin=document.createElement("div");
+
   coin.className="coin";
 
   coin.style.left=(Math.random()*90+5)+"%";
@@ -183,15 +257,18 @@ function createCoin(){
 
   let y=5;
 
+  let speed=1.2+(level*0.2);
+
   let fall=setInterval(function(){
 
-    if(gameOver){
+    if(!gameRunning){
       coin.remove();
       clearInterval(fall);
       return;
     }
 
-    y+=1.2;
+    y+=speed;
+
     coin.style.top=y+"%";
 
     let a=coin.getBoundingClientRect();
@@ -205,17 +282,25 @@ function createCoin(){
     ){
 
       score++;
+
       scoreText.innerText="🪙 Coins: "+score;
 
       coin.remove();
+
       clearInterval(fall);
 
-      if(score>=10){
-        winGame();
+      if(score>=targetCoins){
+
+        if(level<3){
+          nextLevel();
+        }else{
+          winGame();
+        }
       }
     }
 
     if(y>100){
+
       coin.remove();
       clearInterval(fall);
     }
@@ -225,15 +310,12 @@ function createCoin(){
 
 function createEnemy(){
 
-  if(gameOver)return;
+  if(!gameRunning)return;
 
   let enemy=document.createElement("div");
-  enemy.className="enemy";
 
+  enemy.className="enemy";
   enemy.innerText="👾";
-  enemy.style.textAlign="center";
-  enemy.style.fontSize="28px";
-  enemy.style.lineHeight="40px";
 
   enemy.style.left=(Math.random()*90+5)+"%";
   enemy.style.top="5%";
@@ -242,15 +324,19 @@ function createEnemy(){
 
   let y=5;
 
+  let speed=1.3+(level*0.35);
+
   let fall=setInterval(function(){
 
-    if(gameOver){
+    if(!gameRunning){
+
       enemy.remove();
       clearInterval(fall);
       return;
     }
 
-    y+=1.5;
+    y+=speed;
+
     enemy.style.top=y+"%";
 
     let a=enemy.getBoundingClientRect();
@@ -268,14 +354,17 @@ function createEnemy(){
       updateLives();
 
       enemy.remove();
+
       clearInterval(fall);
 
       if(lives<=0){
+
         loseGame();
       }
     }
 
     if(y>100){
+
       enemy.remove();
       clearInterval(fall);
     }
@@ -283,45 +372,67 @@ function createEnemy(){
   },50);
 }
 
-function updateLives(){
+function nextLevel(){
 
-  let hearts="";
+  level++;
 
-  for(let i=0;i<lives;i++){
-    hearts+="❤️";
-  }
+  score=0;
 
-  livesText.innerText=hearts;
+  scoreText.innerText="🪙 Coins: 0";
+  levelText.innerText="⭐ Level "+level;
+
+  message.innerText="🚀 LEVEL "+level+"!";
+
+  setTimeout(function(){
+
+    if(gameRunning){
+      message.innerText="";
+    }
+
+  },1200);
 }
 
 function winGame(){
 
-  gameOver=true;
+  gameRunning=false;
 
-  message.innerText="🎉 YOU WIN! 🎉";
-  restart.style.display="block";
+  message.innerText="🏆 YOU WIN ALL 3 LEVELS! 🎉";
+
+  restartBtn.style.display="block";
 }
 
 function loseGame(){
 
-  gameOver=true;
+  gameRunning=false;
 
   message.innerText="💀 GAME OVER";
-  restart.style.display="block";
+
+  restartBtn.style.display="block";
 }
 
 function restartGame(){
 
   location.reload();
-
 }
 
-setInterval(function(){
-  createCoin();
-},1000);
+/* Coins */
 
 setInterval(function(){
-  createEnemy();
+
+  if(gameRunning){
+    createCoin();
+  }
+
+},900);
+
+/* Enemies */
+
+setInterval(function(){
+
+  if(gameRunning){
+    createEnemy();
+  }
+
 },1800);
 
 updatePlayer();
