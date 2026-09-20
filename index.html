@@ -1,203 +1,331 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Coin Collector</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Coin Collector</title>
 
-  <style>
-    * {
-      box-sizing: border-box;
-    }
+<style>
+*{box-sizing:border-box}
 
-    body {
-      margin: 0;
-      overflow: hidden;
-      background: #87ceeb;
-      font-family: Arial, sans-serif;
-      touch-action: none;
-    }
+body{
+  margin:0;
+  overflow:hidden;
+  font-family:Arial,sans-serif;
+  touch-action:none;
+}
 
-    #game {
-      width: 100vw;
-      height: 100vh;
-      position: relative;
-      overflow: hidden;
-      background: linear-gradient(#87ceeb 70%, #55a630 70%);
-    }
+#game{
+  width:100vw;
+  height:100vh;
+  position:relative;
+  overflow:hidden;
+  background:linear-gradient(#7dd3fc 70%,#4caf24 70%);
+}
 
-    #player {
-      position: absolute;
-      width: 50px;
-      height: 50px;
-      background: #3498db;
-      border-radius: 50%;
-      bottom: 30%;
-      left: 50%;
-      transform: translateX(-50%);
-      border: 4px solid white;
-    }
+#score,#lives{
+  position:absolute;
+  top:15px;
+  background:white;
+  padding:10px 15px;
+  border-radius:12px;
+  font-size:20px;
+  font-weight:bold;
+  z-index:10;
+}
 
-    .coin {
-      position: absolute;
-      width: 30px;
-      height: 30px;
-      background: gold;
-      border: 4px solid #f39c12;
-      border-radius: 50%;
-    }
+#score{left:15px}
+#lives{right:15px}
 
-    #score {
-      position: absolute;
-      top: 20px;
-      left: 20px;
-      background: white;
-      padding: 10px 15px;
-      border-radius: 10px;
-      font-size: 20px;
-      font-weight: bold;
-      z-index: 10;
-    }
+#player{
+  position:absolute;
+  width:52px;
+  height:52px;
+  background:#3498db;
+  border:4px solid white;
+  border-radius:50%;
+  bottom:30%;
+  left:50%;
+  transform:translateX(-50%);
+  z-index:5;
+}
 
-    #message {
-      position: absolute;
-      top: 45%;
-      width: 100%;
-      text-align: center;
-      font-size: 30px;
-      font-weight: bold;
-      color: white;
-      text-shadow: 2px 2px 4px black;
-    }
+.coin{
+  position:absolute;
+  width:30px;
+  height:30px;
+  background:#ffd700;
+  border:4px solid #f39c12;
+  border-radius:50%;
+  z-index:4;
+}
 
-    #controls {
-      position: absolute;
-      bottom: 20px;
-      width: 100%;
-      text-align: center;
-      z-index: 20;
-    }
+.enemy{
+  position:absolute;
+  width:48px;
+  height:48px;
+  background:#e74c3c;
+  border:4px solid white;
+  border-radius:10px;
+  z-index:4;
+}
 
-    button {
-      width: 70px;
-      height: 60px;
-      margin: 5px;
-      font-size: 28px;
-      border: none;
-      border-radius: 15px;
-      background: white;
-    }
-  </style>
+#message{
+  position:absolute;
+  top:42%;
+  width:100%;
+  text-align:center;
+  font-size:34px;
+  font-weight:bold;
+  color:white;
+  text-shadow:2px 2px 5px black;
+  z-index:20;
+}
+
+#restart{
+  display:none;
+  position:absolute;
+  top:52%;
+  left:50%;
+  transform:translateX(-50%);
+  padding:14px 28px;
+  font-size:20px;
+  font-weight:bold;
+  border:0;
+  border-radius:12px;
+  background:white;
+  z-index:20;
+}
+
+#controls{
+  position:absolute;
+  bottom:20px;
+  width:100%;
+  text-align:center;
+  z-index:20;
+}
+
+button.control{
+  width:75px;
+  height:60px;
+  margin:5px;
+  font-size:28px;
+  border:0;
+  border-radius:15px;
+  background:white;
+}
+</style>
 </head>
 
 <body>
 
 <div id="game">
 
-  <div id="score">Coins: 0</div>
+  <div id="score">🪙 Coins: 0</div>
+  <div id="lives">❤️❤️❤️</div>
 
   <div id="player"></div>
 
   <div id="message"></div>
 
+  <button id="restart" onclick="restartGame()">🔄 RESTART</button>
+
   <div id="controls">
-    <button onclick="moveLeft()">⬅️</button>
-    <button onclick="moveRight()">➡️</button>
+    <button class="control" onclick="moveLeft()">⬅️</button>
+    <button class="control" onclick="moveRight()">➡️</button>
   </div>
 
 </div>
 
 <script>
 
-let player = document.getElementById("player");
-let game = document.getElementById("game");
-let scoreText = document.getElementById("score");
-let message = document.getElementById("message");
+let player=document.getElementById("player");
+let game=document.getElementById("game");
+let scoreText=document.getElementById("score");
+let livesText=document.getElementById("lives");
+let message=document.getElementById("message");
+let restart=document.getElementById("restart");
 
-let playerX = 50;
-let score = 0;
+let playerX=50;
+let score=0;
+let lives=3;
+let gameOver=false;
 
-function moveLeft() {
-  playerX -= 8;
+function updatePlayer(){
+  player.style.left=playerX+"%";
+}
 
-  if (playerX < 5) {
-    playerX = 5;
-  }
-
+function moveLeft(){
+  if(gameOver)return;
+  playerX-=8;
+  if(playerX<5)playerX=5;
   updatePlayer();
 }
 
-function moveRight() {
-  playerX += 8;
-
-  if (playerX > 95) {
-    playerX = 95;
-  }
-
+function moveRight(){
+  if(gameOver)return;
+  playerX+=8;
+  if(playerX>95)playerX=95;
   updatePlayer();
 }
 
-function updatePlayer() {
-  player.style.left = playerX + "%";
-}
+function createCoin(){
 
-function createCoin() {
+  if(gameOver)return;
 
-  let coin = document.createElement("div");
+  let coin=document.createElement("div");
+  coin.className="coin";
 
-  coin.className = "coin";
-
-  coin.style.left = (Math.random() * 90 + 5) + "%";
-  coin.style.top = "10%";
+  coin.style.left=(Math.random()*90+5)+"%";
+  coin.style.top="5%";
 
   game.appendChild(coin);
 
-  let y = 10;
+  let y=5;
 
-  let fall = setInterval(function() {
+  let fall=setInterval(function(){
 
-    y += 1;
+    if(gameOver){
+      coin.remove();
+      clearInterval(fall);
+      return;
+    }
 
-    coin.style.top = y + "%";
+    y+=1.2;
+    coin.style.top=y+"%";
 
-    let coinRect = coin.getBoundingClientRect();
-    let playerRect = player.getBoundingClientRect();
+    let a=coin.getBoundingClientRect();
+    let b=player.getBoundingClientRect();
 
-    if (
-      coinRect.left < playerRect.right &&
-      coinRect.right > playerRect.left &&
-      coinRect.top < playerRect.bottom &&
-      coinRect.bottom > playerRect.top
-    ) {
+    if(
+      a.left<b.right &&
+      a.right>b.left &&
+      a.top<b.bottom &&
+      a.bottom>b.top
+    ){
 
       score++;
-
-      scoreText.innerText = "Coins: " + score;
+      scoreText.innerText="🪙 Coins: "+score;
 
       coin.remove();
-
       clearInterval(fall);
 
-      if (score >= 10) {
-        message.innerText = "🎉 YOU WIN! 🎉";
+      if(score>=10){
+        winGame();
       }
     }
 
-    if (y > 100) {
+    if(y>100){
       coin.remove();
       clearInterval(fall);
     }
 
-  }, 50);
+  },50);
 }
 
-setInterval(function() {
+function createEnemy(){
 
-  if (score < 10) {
-    createCoin();
+  if(gameOver)return;
+
+  let enemy=document.createElement("div");
+  enemy.className="enemy";
+
+  enemy.innerText="👾";
+  enemy.style.textAlign="center";
+  enemy.style.fontSize="28px";
+  enemy.style.lineHeight="40px";
+
+  enemy.style.left=(Math.random()*90+5)+"%";
+  enemy.style.top="5%";
+
+  game.appendChild(enemy);
+
+  let y=5;
+
+  let fall=setInterval(function(){
+
+    if(gameOver){
+      enemy.remove();
+      clearInterval(fall);
+      return;
+    }
+
+    y+=1.5;
+    enemy.style.top=y+"%";
+
+    let a=enemy.getBoundingClientRect();
+    let b=player.getBoundingClientRect();
+
+    if(
+      a.left<b.right &&
+      a.right>b.left &&
+      a.top<b.bottom &&
+      a.bottom>b.top
+    ){
+
+      lives--;
+
+      updateLives();
+
+      enemy.remove();
+      clearInterval(fall);
+
+      if(lives<=0){
+        loseGame();
+      }
+    }
+
+    if(y>100){
+      enemy.remove();
+      clearInterval(fall);
+    }
+
+  },50);
+}
+
+function updateLives(){
+
+  let hearts="";
+
+  for(let i=0;i<lives;i++){
+    hearts+="❤️";
   }
 
-}, 1200);
+  livesText.innerText=hearts;
+}
+
+function winGame(){
+
+  gameOver=true;
+
+  message.innerText="🎉 YOU WIN! 🎉";
+  restart.style.display="block";
+}
+
+function loseGame(){
+
+  gameOver=true;
+
+  message.innerText="💀 GAME OVER";
+  restart.style.display="block";
+}
+
+function restartGame(){
+
+  location.reload();
+
+}
+
+setInterval(function(){
+  createCoin();
+},1000);
+
+setInterval(function(){
+  createEnemy();
+},1800);
+
+updatePlayer();
+updateLives();
 
 </script>
 
