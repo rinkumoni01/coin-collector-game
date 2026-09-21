@@ -4,1550 +4,218 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=no">
 <title>Coin Adventure</title>
-
 <style>
-*{box-sizing:border-box}
-
-html,body{
- margin:0;
- width:100%;
- height:100%;
- overflow:hidden;
- font-family:Arial,sans-serif;
- touch-action:none;
-}
-
-#game{
- position:relative;
- width:100vw;
- height:100vh;
- overflow:hidden;
- background:linear-gradient(#38bdf8 0 58%,#43a928 58%);
-}
-
-#game.desert{
- background:linear-gradient(#65d5ff 0 58%,#c99443 58%);
-}
-
-#game.snow{
- background:linear-gradient(#a8e8ff 0 58%,#eaf8ff 58%);
-}
-
-#game.lava{
- background:linear-gradient(#250c16 0 58%,#571616 58%);
-}
-
-/* BACKGROUND */
-
-.sun{
- position:absolute;
- width:65px;
- height:65px;
- right:10%;
- top:8%;
- border-radius:50%;
- background:#ffd52e;
- box-shadow:0 0 25px #fff5a0;
-}
-
-.cloud{
- position:absolute;
- width:100px;
- height:30px;
- border-radius:30px;
- background:#fff;
- opacity:.85;
-}
-
-.cloud:before,
-.cloud:after{
- content:"";
- position:absolute;
- background:#fff;
- border-radius:50%;
-}
-
-.cloud:before{
- width:45px;
- height:45px;
- left:12px;
- top:-22px;
-}
-
-.cloud:after{
- width:50px;
- height:50px;
- right:10px;
- top:-25px;
-}
-
-.c1{top:100px;left:10%}
-.c2{top:180px;left:65%}
-
-.tree{
- position:absolute;
- bottom:34%;
- font-size:70px;
- z-index:5;
-}
-
-.t1{left:3%}
-.t2{right:4%}
-.t3{left:18%;font-size:55px}
-.t4{right:20%;font-size:55px}
-
-#road{
- position:absolute;
- bottom:0;
- width:100%;
- height:36%;
- background:
- repeating-linear-gradient(
- 90deg,
- #46a927 0 55px,
- #3e9a22 55px 110px
- );
- border-top:5px solid #70d84c;
-}
-
-.desert #road{
- background:
- repeating-linear-gradient(
- 90deg,
- #d39b42 0 55px,
- #bd8130 55px 110px
- );
- border-top-color:#efc86c;
-}
-
-.snow #road{
- background:
- repeating-linear-gradient(
- 90deg,
- #f8fdff 0 55px,
- #dbeef5 55px 110px
- );
- border-top-color:#fff;
-}
-
-.lava #road{
- background:
- repeating-linear-gradient(
- 90deg,
- #411212 0 55px,
- #621818 55px 110px
- );
- border-top-color:#ff4d1c;
-}
-
-/* HUD */
-
-.hud{
- position:absolute;
- top:10px;
- z-index:100;
- padding:9px 12px;
- background:white;
- border-radius:14px;
- font-size:15px;
- font-weight:bold;
- box-shadow:0 3px 8px #0004;
-}
-
-#coins{
- left:7px;
-}
-
-#level{
- left:50%;
- transform:translateX(-50%);
-}
-
-#lives{
- right:7px;
-}
-
-#world{
- position:absolute;
- top:108px;
- left:50%;
- transform:translateX(-50%);
- z-index:80;
- color:white;
- font-weight:bold;
- font-size:21px;
- text-shadow:2px 3px 5px #000;
- white-space:nowrap;
-}
-
-#powers{
- position:absolute;
- top:138px;
- width:100%;
- text-align:center;
- color:white;
- font-weight:bold;
- z-index:80;
- text-shadow:2px 2px 4px #000;
-}
-
-/* TOP BUTTONS */
-
-.topBtn{
- position:absolute;
- top:60px;
- width:46px;
- height:43px;
- border:0;
- border-radius:13px;
- background:#fff;
- font-size:20px;
- z-index:120;
-}
-
-#pause{
- left:8px;
-}
-
-#sound{
- right:8px;
-}
-
-/* PLAYER */
-
-#player{
- position:absolute;
- width:64px;
- height:95px;
- left:50%;
- bottom:29%;
- transform:translateX(-50%);
- z-index:50;
-}
-
-.head{
- position:absolute;
- width:43px;
- height:43px;
- left:11px;
- top:8px;
- background:#ffd0a5;
- border:3px solid #222;
- border-radius:50%;
- z-index:3;
-}
-
-.hair{
- position:absolute;
- width:48px;
- height:25px;
- left:8px;
- top:0;
- background:#302015;
- border-radius:50%;
- z-index:4;
-}
-
-.eye{
- position:absolute;
- width:5px;
- height:7px;
- background:#222;
- border-radius:50%;
- top:15px;
-}
-
-.e1{left:9px}
-.e2{right:9px}
-
-.body{
- position:absolute;
- width:43px;
- height:38px;
- left:11px;
- top:48px;
- background:#1976d2;
- border:3px solid #222;
- border-radius:12px;
-}
-
-.arm{
- position:absolute;
- width:11px;
- height:34px;
- top:51px;
- background:#ffd0a5;
- border:3px solid #222;
- border-radius:10px;
- z-index:2;
-}
-
-.a1{
- left:2px;
- transform:rotate(18deg);
-}
-
-.a2{
- right:2px;
- transform:rotate(-18deg);
-}
-
-.leg{
- position:absolute;
- width:13px;
- height:32px;
- top:79px;
- background:#273b73;
- border:3px solid #222;
- border-radius:8px;
-}
-
-.l1{left:15px}
-.l2{right:15px}
-
-.sword{
- display:none;
- position:absolute;
- width:60px;
- height:9px;
- right:-48px;
- top:42px;
- background:#eefcff;
- border:3px solid #555;
- border-radius:5px;
- transform:rotate(-25deg);
- z-index:10;
-}
-
-.attack .sword{
- display:block;
-}
-
-.shield::after{
- content:"";
- position:absolute;
- left:-10px;
- top:-5px;
- width:82px;
- height:105px;
- border:5px solid #25e5ff;
- border-radius:50%;
- box-shadow:0 0 20px #25e5ff;
-}
-
-/* COIN */
-
-.coin{
- position:absolute;
- width:35px;
- height:35px;
- border-radius:50%;
- background:#ffd51f;
- border:4px solid #ed9700;
- z-index:30;
- box-shadow:0 2px 6px #0005;
-}
-
-/* POWER */
-
-.power{
- position:absolute;
- width:44px;
- height:44px;
- border-radius:50%;
- background:linear-gradient(135deg,#ff3bff,#6625ff);
- border:4px solid white;
- color:white;
- font-size:23px;
- text-align:center;
- line-height:36px;
- z-index:31;
- box-shadow:0 0 18px #d55cff;
-}
-
-/* ENEMY */
-
-.enemy{
- position:absolute;
- width:58px;
- height:58px;
- border-radius:16px;
- border:4px solid white;
- text-align:center;
- line-height:50px;
- font-size:28px;
- z-index:40;
- box-shadow:0 3px 8px #0006;
-}
-
-.basic{
- background:#e53935;
-}
-
-.fast{
- background:#ff8c00;
-}
-
-.tank{
- width:70px;
- height:70px;
- line-height:62px;
- background:#7132a8;
- font-size:34px;
-}
-
-.hp{
- position:absolute;
- width:58px;
- height:7px;
- top:-13px;
- left:0;
- background:#400;
- border:1px solid white;
- border-radius:8px;
- overflow:hidden;
-}
-
-.hpbar{
- width:100%;
- height:100%;
- background:#39d34c;
-}
-
-/* BOSS */
-
-#boss{
- display:none;
- position:absolute;
- width:125px;
- height:125px;
- top:13%;
- left:50%;
- transform:translateX(-50%);
- z-index:60;
- background:radial-gradient(circle,#ff7437,#a40000);
- border:7px solid #ffd43b;
- border-radius:35%;
- text-align:center;
- line-height:105px;
- font-size:70px;
- box-shadow:0 0 25px red;
-}
-
-#bossHP{
- display:none;
- position:absolute;
- width:220px;
- height:20px;
- top:29%;
- left:50%;
- transform:translateX(-50%);
- background:#300;
- border:3px solid white;
- border-radius:15px;
- overflow:hidden;
- z-index:61;
-}
-
-#bossBar{
- width:100%;
- height:100%;
- background:#ff3030;
-}
-
-/* EFFECT */
-
-.effect{
- position:absolute;
- z-index:200;
- font-size:32px;
- pointer-events:none;
- animation:effect .5s forwards;
-}
-
-@keyframes effect{
- from{
-  opacity:1;
-  transform:scale(.5) translateY(0);
- }
- to{
-  opacity:0;
-  transform:scale(1.5) translateY(-45px);
- }
-}
-
-/* MESSAGE */
-
-#message{
- position:absolute;
- top:40%;
- width:100%;
- text-align:center;
- color:white;
- font-size:29px;
- font-weight:bold;
- text-shadow:2px 3px 5px #000;
- z-index:90;
-}
-
-/* CONTROLS */
-
-#controls{
- position:absolute;
- bottom:75px;
- left:0;
- width:100%;
- display:flex;
- justify-content:center;
- gap:10px;
- z-index:150;
-}
-
-.ctrl{
- width:70px;
- height:57px;
- border:3px solid white;
- border-radius:18px;
- background:#ffffffdf;
- font-size:27px;
- box-shadow:0 4px 8px #0004;
-}
-
-.attackBtn{
- background:#ff6035;
- color:white;
-}
-
-.ctrl:active{
- transform:scale(.9);
-}
-
-/* MENU */
-
-#menu{
- position:absolute;
- inset:0;
- z-index:300;
- display:flex;
- flex-direction:column;
- justify-content:center;
- align-items:center;
- text-align:center;
- color:white;
- background:linear-gradient(#169de4,#39c5ec 55%,#32aa55);
-}
-
-.logo{
- font-size:39px;
- font-weight:bold;
- text-shadow:3px 4px 7px #0008;
-}
-
-.sub{
- margin:12px 0 25px;
- font-size:18px;
-}
-
-.menuBtn{
- width:230px;
- padding:15px;
- margin:6px;
- border:0;
- border-radius:17px;
- background:white;
- color:#1974af;
- font-size:19px;
- font-weight:bold;
- box-shadow:0 5px 10px #0005;
-}
-
-/* PANELS */
-
-.panel{
- display:none;
- position:absolute;
- inset:0;
- z-index:350;
- background:#000d;
- color:white;
- text-align:center;
- padding:30px 20px;
- overflow:auto;
-}
-
-.panel h2{
- font-size:29px;
-}
-
-.panel p{
- line-height:1.5;
-}
-
-.back{
- padding:13px 27px;
- border:0;
- border-radius:13px;
- font-weight:bold;
- font-size:17px;
-}
-
-/* PAUSE */
-
-#pauseScreen{
- display:none;
- position:absolute;
- inset:0;
- z-index:250;
- background:#000b;
- color:white;
- align-items:center;
- justify-content:center;
- flex-direction:column;
-}
-
-#pauseScreen h2{
- font-size:38px;
-}
-
-/* RESTART */
-
-#restart{
- display:none;
- position:absolute;
- top:55%;
- left:50%;
- transform:translateX(-50%);
- z-index:220;
- border:0;
- border-radius:15px;
- background:white;
- padding:15px 30px;
- font-size:20px;
- font-weight:bold;
-}
-
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;width:100%;height:100%;overflow:hidden;font-family:Arial,sans-serif;touch-action:none}
+#game{position:relative;width:100vw;height:100vh;overflow:hidden;background:linear-gradient(#25aee8 0 62%,#48a928 62%)}
+#game.desert{background:linear-gradient(#5ac9ee 0 62%,#c48b3d 62%)}
+#game.snow{background:linear-gradient(#9de5ff 0 62%,#eaf8ff 62%)}
+#game.lava{background:linear-gradient(#260b18 0 62%,#5b1717 62%)}
+.sun{position:absolute;right:8%;top:9%;width:60px;height:60px;border-radius:50%;background:#ffd82e;box-shadow:0 0 25px #fff59d}
+.cloud{position:absolute;width:95px;height:28px;border-radius:30px;background:white;opacity:.85}
+.cloud:before,.cloud:after{content:"";position:absolute;background:white;border-radius:50%}
+.cloud:before{width:42px;height:42px;left:12px;top:-20px}.cloud:after{width:46px;height:46px;right:8px;top:-23px}
+.c1{top:90px;left:8%}.c2{top:180px;left:62%}
+.tree{position:absolute;bottom:34%;font-size:65px;z-index:5}.t1{left:2%}.t2{right:2%}.t3{left:20%;font-size:50px}.t4{right:20%;font-size:50px}
+#ground{position:absolute;left:0;bottom:0;width:100%;height:38%;background:repeating-linear-gradient(90deg,#42a927 0 55px,#399b21 55px 110px);border-top:5px solid #70d54b}
+.desert #ground{background:repeating-linear-gradient(90deg,#d19a45 0 55px,#bb8030 55px 110px);border-top-color:#f0ca72}
+.snow #ground{background:repeating-linear-gradient(90deg,#f8fdff 0 55px,#dceff5 55px 110px);border-top-color:white}
+.lava #ground{background:repeating-linear-gradient(90deg,#401111 0 55px,#601818 55px 110px);border-top-color:#ff4d1c}
+.hud{position:absolute;top:10px;z-index:100;background:white;color:#111;padding:9px 11px;border-radius:14px;font-size:14px;font-weight:bold;box-shadow:0 3px 8px #0005}
+#coins{left:6px}#level{left:50%;transform:translateX(-50%)}#lives{right:6px}
+#world{position:absolute;top:105px;left:50%;transform:translateX(-50%);z-index:90;color:white;font-size:19px;font-weight:bold;text-shadow:2px 3px 5px #000;white-space:nowrap}
+#powerText{position:absolute;top:133px;width:100%;text-align:center;color:white;font-weight:bold;text-shadow:2px 2px 4px #000;z-index:90}
+.topButton{position:absolute;top:55px;width:45px;height:42px;border:0;border-radius:13px;background:white;font-size:19px;z-index:150}
+#pauseButton{left:7px}#soundButton{right:7px}
+#player{position:absolute;width:64px;height:95px;left:50%;bottom:31%;transform:translateX(-50%);z-index:60;transition:bottom .25s}
+.head{position:absolute;width:43px;height:43px;left:11px;top:8px;background:#ffd0a5;border:3px solid #222;border-radius:50%;z-index:3}
+.hair{position:absolute;width:48px;height:25px;left:8px;top:0;background:#302015;border-radius:50%;z-index:4}
+.eye{position:absolute;width:5px;height:7px;top:15px;background:#222;border-radius:50%}.e1{left:9px}.e2{right:9px}
+.body{position:absolute;width:43px;height:38px;left:11px;top:48px;background:#1976d2;border:3px solid #222;border-radius:12px}
+.arm{position:absolute;width:11px;height:34px;top:51px;background:#ffd0a5;border:3px solid #222;border-radius:10px}.a1{left:2px;transform:rotate(18deg)}.a2{right:2px;transform:rotate(-18deg)}
+.leg{position:absolute;width:13px;height:32px;top:79px;background:#273b73;border:3px solid #222;border-radius:8px}.l1{left:15px}.l2{right:15px}
+.sword{display:none;position:absolute;width:62px;height:9px;right:-50px;top:43px;background:#eefcff;border:3px solid #555;border-radius:5px;transform:rotate(-25deg);z-index:10}.attacking .sword{display:block}
+.shield:after{content:"";position:absolute;left:-10px;top:-6px;width:82px;height:105px;border:5px solid #26e6ff;border-radius:50%;box-shadow:0 0 20px #26e6ff}
+.coin{position:absolute;width:36px;height:36px;border-radius:50%;background:#ffd51f;border:4px solid #e99a00;box-shadow:0 2px 8px #0006;z-index:40;animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotateY(360deg)}}
+.power{position:absolute;width:45px;height:45px;border-radius:50%;background:linear-gradient(135deg,#ff3bff,#632cff);border:4px solid white;color:white;text-align:center;line-height:37px;font-size:23px;z-index:42;box-shadow:0 0 18px #d55cff}
+.enemy{position:absolute;width:58px;height:58px;border-radius:16px;border:4px solid white;text-align:center;line-height:50px;font-size:28px;z-index:50;box-shadow:0 3px 8px #0006}
+.basic{background:#e53935}.fast{background:#ff8c00}.tank{width:70px;height:70px;line-height:62px;background:#7132a8;font-size:34px}
+#boss{display:none;position:absolute;top:15%;left:50%;transform:translateX(-50%);width:125px;height:125px;z-index:70;border:7px solid #ffd43b;border-radius:35%;background:radial-gradient(circle,#ff7437,#a40000);text-align:center;line-height:110px;font-size:70px;box-shadow:0 0 25px red}
+#bossBarBox{display:none;position:absolute;top:31%;left:50%;transform:translateX(-50%);width:220px;height:20px;border:3px solid white;border-radius:15px;background:#300;overflow:hidden;z-index:75}
+#bossBar{width:100%;height:100%;background:#ff3030}
+#message{position:absolute;top:42%;width:100%;text-align:center;color:white;font-size:29px;font-weight:bold;text-shadow:2px 3px 5px #000;z-index:100}
+#controls{position:absolute;left:0;bottom:105px;width:100%;display:flex;justify-content:center;gap:9px;z-index:160}
+.control{width:67px;height:55px;border:3px solid white;border-radius:17px;background:#ffffffdd;font-size:26px;box-shadow:0 4px 8px #0005}
+.attackButton{background:#ff5935;color:white}
+#menu{position:absolute;inset:0;z-index:300;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;color:white;background:linear-gradient(#159ee5,#3ac5ec 55%,#32aa55)}
+.logo{font-size:39px;font-weight:bold;text-shadow:3px 4px 7px #0008}.subtitle{margin:12px 0 25px;font-size:18px}
+.menuButton{width:230px;padding:15px;margin:6px;border:0;border-radius:17px;background:white;color:#1974af;font-size:19px;font-weight:bold;box-shadow:0 5px 10px #0005}
+.panel{display:none;position:absolute;inset:0;z-index:350;background:#000d;color:white;text-align:center;padding:30px 20px}.panel h2{font-size:29px}.panel p{line-height:1.5}
+.backButton{padding:13px 27px;border:0;border-radius:13px;font-size:17px;font-weight:bold}
+#pauseScreen{display:none;position:absolute;inset:0;z-index:250;background:#000c;color:white;align-items:center;justify-content:center;flex-direction:column}#pauseScreen h2{font-size:38px}
+#restart{display:none;position:absolute;top:55%;left:50%;transform:translateX(-50%);z-index:220;border:0;border-radius:15px;background:white;padding:15px 30px;font-size:20px;font-weight:bold}
+@media(max-width:400px){.logo{font-size:32px}.menuButton{width:215px}.control{width:61px}}
 </style>
 </head>
-
 <body>
-
 <div id="game">
-
-<div class="sun"></div>
-<div class="cloud c1"></div>
-<div class="cloud c2"></div>
-
-<div class="tree t1">🌳</div>
-<div class="tree t2">🌳</div>
-<div class="tree t3">🌲</div>
-<div class="tree t4">🌲</div>
-
-<div id="road"></div>
-
+<div class="sun"></div><div class="cloud c1"></div><div class="cloud c2"></div>
+<div class="tree t1">🌳</div><div class="tree t2">🌳</div><div class="tree t3">🌲</div><div class="tree t4">🌲</div>
+<div id="ground"></div>
 <div id="world">🌳 FOREST WORLD</div>
-
-<div id="coins" class="hud">🪙 0/10</div>
-<div id="level" class="hud">⭐ Level 1/1000</div>
-<div id="lives" class="hud">❤️❤️❤️</div>
-
-<div id="powers"></div>
-
-<button id="pause" class="topBtn" onclick="pauseGame()">⏸️</button>
-<button id="sound" class="topBtn" onclick="toggleSound()">🔊</button>
-
-<!-- PLAYER -->
-
-<div id="player">
-
-<div class="hair"></div>
-
-<div class="head">
-<div class="eye e1"></div>
-<div class="eye e2"></div>
+<div id="coins" class="hud">🪙 0/10</div><div id="level" class="hud">⭐ Level 1/1000</div><div id="lives" class="hud">❤️❤️❤️</div>
+<div id="powerText"></div>
+<button id="pauseButton" class="topButton" onclick="togglePause()">⏸️</button><button id="soundButton" class="topButton" onclick="toggleSound()">🔊</button>
+<div id="player"><div class="hair"></div><div class="head"><div class="eye e1"></div><div class="eye e2"></div></div><div class="body"></div><div class="arm a1"></div><div class="arm a2"></div><div class="leg l1"></div><div class="leg l2"></div><div class="sword"></div></div>
+<div id="boss">👹</div><div id="bossBarBox"><div id="bossBar"></div></div><div id="message"></div>
+<div id="controls"><button class="control" onclick="moveLeft()">⬅️</button><button class="control" onclick="jump()">⬆️</button><button class="control attackButton" onclick="attack()">⚔️</button><button class="control" onclick="moveRight()">➡️</button></div>
+<button id="restart" onclick="restartGame()">🔄 RESTART</button>
+<div id="menu"><div class="logo">🪙 COIN ADVENTURE</div><div class="subtitle">🌍 4 WORLDS • ⭐ 1000 LEVELS</div><button class="menuButton" onclick="startGame()">▶️ PLAY</button><button class="menuButton" onclick="openHowToPlay()">📖 HOW TO PLAY</button><button class="menuButton" onclick="openSettings()">⚙️ SETTINGS</button></div>
+<div id="howPanel" class="panel"><h2>📖 HOW TO PLAY</h2><p>🪙 10 coins collect karo = next level.</p><p>⬅️ Left &nbsp; ⬆️ Jump &nbsp; ⚔️ Attack &nbsp; ➡️ Right</p><p>🛡️ Shield / ⚡ Speed power</p><p>👹 Har 50 level par Boss.</p><br><button class="backButton" onclick="closePanels()">⬅️ BACK</button></div>
+<div id="settingsPanel" class="panel"><h2>⚙️ SETTINGS</h2><button class="backButton" onclick="toggleSound()">🔊 SOUND ON / OFF</button><br><br><button class="backButton" onclick="closePanels()">⬅️ BACK</button></div>
+<div id="pauseScreen"><h2>⏸️ PAUSED</h2><button class="backButton" onclick="togglePause()">▶️ RESUME</button><br><button class="backButton" onclick="goMenu()">🏠 MENU</button></div>
 </div>
-
-<div class="body"></div>
-
-<div class="arm a1"></div>
-<div class="arm a2"></div>
-
-<div class="leg l1"></div>
-<div class="leg l2"></div>
-
-<div class="sword"></div>
-
-</div>
-
-<!-- BOSS -->
-
-<div id="boss">👹</div>
-
-<div id="bossHP">
-<div id="bossBar"></div>
-</div>
-
-<div id="message"></div>
-
-<!-- CONTROLS -->
-
-<div id="controls">
-
-<button class="ctrl" onclick="left()">⬅️</button>
-<button class="ctrl" onclick="jump()">⬆️</button>
-<button class="ctrl attackBtn" onclick="attack()">⚔️</button>
-<button class="ctrl" onclick="right()">➡️</button>
-
-</div>
-
-<button id="restart" onclick="restart()">🔄 RESTART</button>
-
-<!-- MENU -->
-
-<div id="menu">
-
-<div class="logo">🪙 COIN ADVENTURE</div>
-
-<div class="sub">
-🌍 4 WORLDS • ⭐ 1000 LEVELS
-</div>
-
-<button class="menuBtn" onclick="start()">▶️ PLAY</button>
-
-<button class="menuBtn" onclick="showHow()">📖 HOW TO PLAY</button>
-
-<button class="menuBtn" onclick="showSettings()">⚙️ SETTINGS</button>
-
-</div>
-
-<!-- HOW -->
-
-<div id="how" class="panel">
-
-<h2>📖 HOW TO PLAY</h2>
-
-<p>🪙 10 coins collect karke next level.</p>
-<p>⬅️ Move left</p>
-<p>⬆️ Jump</p>
-<p>⚔️ Enemy ko attack karo</p>
-<p>➡️ Move right</p>
-<p>🛡️ Shield damage se bachata hai.</p>
-<p>⚡ Speed movement fast karta hai.</p>
-<p>👹 Har 50 level par Boss.</p>
-
-<br>
-
-<button class="back" onclick="closePanels()">⬅️ BACK</button>
-
-</div>
-
-<!-- SETTINGS -->
-
-<div id="settings" class="panel">
-
-<h2>⚙️ SETTINGS</h2>
-
-<button class="back" onclick="toggleSound()">
-🔊 SOUND ON / OFF
-</button>
-
-<br><br>
-
-<button class="back" onclick="closePanels()">⬅️ BACK</button>
-
-</div>
-
-<!-- PAUSE -->
-
-<div id="pauseScreen">
-
-<h2>⏸️ PAUSED</h2>
-
-<button class="back" onclick="pauseGame()">
-▶️ RESUME
-</button>
-
-<br>
-
-<button class="back" onclick="goMenu()">
-🏠 MENU
-</button>
-
-</div>
-
-</div>
-
 <script>
-
-let game=document.getElementById("game");
-let player=document.getElementById("player");
-
-let coinBox=document.getElementById("coins");
-let levelBox=document.getElementById("level");
-let livesBox=document.getElementById("lives");
-let powersBox=document.getElementById("powers");
-
-let menu=document.getElementById("menu");
-let message=document.getElementById("message");
-let restartBtn=document.getElementById("restart");
-
-let boss=document.getElementById("boss");
-let bossHP=document.getElementById("bossHP");
-let bossBar=document.getElementById("bossBar");
-
-let pausedScreen=document.getElementById("pauseScreen");
-
-let level=1;
-let coins=0;
-let lives=3;
-
-let playerX=50;
-
-let playing=false;
-let paused=false;
-let jumping=false;
-let attacking=false;
-
-let shield=false;
-let speed=false;
-let soundOn=true;
-
-let bossActive=false;
-let bossHealth=10;
-
+const game=document.getElementById("game"),player=document.getElementById("player"),menu=document.getElementById("menu");
+const coinBox=document.getElementById("coins"),levelBox=document.getElementById("level"),livesBox=document.getElementById("lives");
+const message=document.getElementById("message"),powerText=document.getElementById("powerText"),restartButton=document.getElementById("restart");
+const boss=document.getElementById("boss"),bossBarBox=document.getElementById("bossBarBox"),bossBar=document.getElementById("bossBar"),pauseScreen=document.getElementById("pauseScreen");
+let level=1,coins=0,lives=3,playerX=50,playing=false,paused=false,jumping=false,attacking=false,shield=false,speedPower=false,bossActive=false,bossHP=10,soundOn=true;
 const MAX_LEVEL=1000;
 
-
-/* START */
-
-function start(){
-
- menu.style.display="none";
-
- playing=true;
- paused=false;
-
- level=1;
- coins=0;
- lives=3;
- playerX=50;
-
- player.style.left="50%";
-
- restartBtn.style.display="none";
-
- updateWorld();
- updateHUD();
-
- message.innerText="";
-
+function startGame(){
+  menu.style.display="none"; playing=true; paused=false; level=1; coins=0; lives=3; playerX=50;
+  player.style.left="50%"; player.style.bottom="31%"; restartButton.style.display="none"; message.innerText="";
+  document.querySelectorAll(".coin,.enemy,.power").forEach(e=>e.remove());
+  boss.style.display="none"; bossBarBox.style.display="none"; bossActive=false;
+  updateWorld();updateHUD();
 }
-
-
-/* WORLD */
-
 function updateWorld(){
-
- game.classList.remove("desert","snow","lava");
-
- if(level<=250){
-
-  game.classList.add("forest");
-  document.getElementById("world").innerText="🌳 FOREST WORLD";
-
- }
-
- else if(level<=500){
-
-  game.classList.add("desert");
-  document.getElementById("world").innerText="🏜️ DESERT WORLD";
-
- }
-
- else if(level<=750){
-
-  game.classList.add("snow");
-  document.getElementById("world").innerText="❄️ SNOW WORLD";
-
- }
-
- else{
-
-  game.classList.add("lava");
-  document.getElementById("world").innerText="🌋 LAVA WORLD";
-
- }
-
+  game.classList.remove("desert","snow","lava");
+  if(level<=250) document.getElementById("world").innerText="🌳 FOREST WORLD";
+  else if(level<=500){game.classList.add("desert");document.getElementById("world").innerText="🏜️ DESERT WORLD";}
+  else if(level<=750){game.classList.add("snow");document.getElementById("world").innerText="❄️ SNOW WORLD";}
+  else{game.classList.add("lava");document.getElementById("world").innerText="🌋 LAVA WORLD";}
 }
-
-
-/* HUD */
-
 function updateHUD(){
-
- coinBox.innerText="🪙 "+coins+"/10";
- levelBox.innerText="⭐ Level "+level+"/1000";
-
- let h="";
-
- for(let i=0;i<lives;i++){
-  h+="❤️";
- }
-
- livesBox.innerText=h;
-
- let p="";
-
- if(shield)p+="🛡️ SHIELD ";
-
- if(speed)p+="⚡ SPEED";
-
- powersBox.innerText=p;
-
+  coinBox.innerText="🪙 "+coins+"/10"; levelBox.innerText="⭐ Level "+level+"/1000";
+  livesBox.innerText="❤️".repeat(Math.max(0,lives));
+  powerText.innerText=(shield?"🛡️ SHIELD ":"")+(speedPower?"⚡ SPEED":"");
 }
-
-
-/* SOUND */
-
-function beep(freq){
-
- if(!soundOn)return;
-
- try{
-
-  let AC=window.AudioContext||window.webkitAudioContext;
-  let ac=new AC();
-
-  let osc=ac.createOscillator();
-  let gain=ac.createGain();
-
-  osc.connect(gain);
-  gain.connect(ac.destination);
-
-  osc.frequency.value=freq;
-  gain.gain.value=.1;
-
-  osc.start();
-
-  setTimeout(()=>{
-   osc.stop();
-   ac.close();
-  },120);
-
- }catch(e){}
-
+function sound(freq){
+  if(!soundOn)return;
+  try{
+    const AC=window.AudioContext||window.webkitAudioContext;if(!AC)return;
+    const audio=new AC(),osc=audio.createOscillator(),gain=audio.createGain();
+    osc.connect(gain);gain.connect(audio.destination);osc.frequency.value=freq;gain.gain.value=.08;osc.start();
+    setTimeout(()=>{osc.stop();audio.close()},120);
+  }catch(e){}
 }
-
-
-function toggleSound(){
-
- soundOn=!soundOn;
-
- document.getElementById("sound").innerText=
- soundOn?"🔊":"🔇";
-
-}
-
-
-/* MOVE */
-
-function left(){
-
- if(!playing||paused)return;
-
- playerX-=speed?14:8;
-
- if(playerX<5)playerX=5;
-
- player.style.left=playerX+"%";
-
-}
-
-
-function right(){
-
- if(!playing||paused)return;
-
- playerX+=speed?14:8;
-
- if(playerX>95)playerX=95;
-
- player.style.left=playerX+"%";
-
-}
-
-
-/* JUMP */
-
+function toggleSound(){soundOn=!soundOn;document.getElementById("soundButton").innerText=soundOn?"🔊":"🔇";}
+function moveLeft(){if(!playing||paused)return;playerX-=speedPower?12:7;playerX=Math.max(5,playerX);player.style.left=playerX+"%";}
+function moveRight(){if(!playing||paused)return;playerX+=speedPower?12:7;playerX=Math.min(95,playerX);player.style.left=playerX+"%";}
 function jump(){
-
- if(!playing||paused||jumping)return;
-
- jumping=true;
-
- player.style.transition="bottom .3s";
-
- player.style.bottom="52%";
-
- setTimeout(()=>{
-
-  player.style.bottom="29%";
-
-  setTimeout(()=>{
-   jumping=false;
-  },300);
-
- },300);
-
+  if(!playing||paused||jumping)return;jumping=true;player.style.bottom="53%";sound(650);
+  setTimeout(()=>{player.style.bottom="31%";setTimeout(()=>jumping=false,250)},300);
 }
-
-
-/* ATTACK */
-
 function attack(){
-
- if(!playing||paused||attacking)return;
-
- attacking=true;
-
- player.classList.add("attack");
-
- beep(500);
-
- let p=player.getBoundingClientRect();
-
- document.querySelectorAll(".enemy").forEach(e=>{
-
-  let r=e.getBoundingClientRect();
-
-  if(
-   Math.abs(p.left-r.left)<130 &&
-   Math.abs(p.top-r.top)<110
-  ){
-
-   damageEnemy(e);
-
-  }
-
- });
-
- if(bossActive){
-
-  let b=boss.getBoundingClientRect();
-
-  if(Math.abs(p.left-b.left)<180){
-   damageBoss();
-  }
-
- }
-
- setTimeout(()=>{
-
-  player.classList.remove("attack");
-  attacking=false;
-
- },250);
-
+  if(!playing||paused||attacking)return;attacking=true;player.classList.add("attacking");sound(500);
+  const p=player.getBoundingClientRect();
+  document.querySelectorAll(".enemy").forEach(enemy=>{
+    const e=enemy.getBoundingClientRect();
+    if(Math.abs(p.left-e.left)<130&&Math.abs(p.top-e.top)<120){enemy.remove();createEffect(e.left,e.top,"💥");sound(300);}
+  });
+  if(bossActive){const b=boss.getBoundingClientRect();if(Math.abs(p.left-b.left)<180&&Math.abs(p.top-b.top)<180)damageBoss();}
+  setTimeout(()=>{player.classList.remove("attacking");attacking=false},250);
 }
-
-
-/* DAMAGE ENEMY */
-
-function damageEnemy(enemy){
-
- let hp=Number(enemy.dataset.hp)-1;
-
- enemy.dataset.hp=hp;
-
- let bar=enemy.querySelector(".hpbar");
-
- if(bar){
-
-  let max=Number(enemy.dataset.max);
-
-  bar.style.width=
-   Math.max(0,(hp/max)*100)+"%";
-
- }
-
- effect(
-  enemy.getBoundingClientRect().left,
-  enemy.getBoundingClientRect().top,
-  "💥"
- );
-
- beep(260);
-
- if(hp<=0){
-
-  effect(
-   enemy.getBoundingClientRect().left,
-   enemy.getBoundingClientRect().top,
-   "✨"
-  );
-
-  enemy.remove();
-
- }
-
+function createEffect(x,y,text){
+  const el=document.createElement("div");el.innerText=text;el.style.cssText=`position:absolute;left:${x}px;top:${y}px;font-size:32px;z-index:200`;
+  game.appendChild(el);setTimeout(()=>el.remove(),500);
 }
-
-
-/* EFFECT */
-
-function effect(x,y,text){
-
- let e=document.createElement("div");
-
- e.className="effect";
- e.innerText=text;
-
- e.style.left=x+"px";
- e.style.top=y+"px";
-
- game.appendChild(e);
-
- setTimeout(()=>{
-  e.remove();
- },500);
-
+function createCoin(){
+  if(!playing||paused||bossActive)return;
+  const coin=document.createElement("div");coin.className="coin";coin.style.left=(Math.random()*88+5)+"%";coin.style.top="-45px";game.appendChild(coin);
+  let y=-45;
+  const timer=setInterval(()=>{
+    if(!playing){coin.remove();clearInterval(timer);return} if(paused)return;
+    y+=3;coin.style.top=y+"px";const c=coin.getBoundingClientRect(),p=player.getBoundingClientRect();
+    if(c.left<p.right&&c.right>p.left&&c.top<p.bottom&&c.bottom>p.top){
+      coins++;sound(800);coin.remove();clearInterval(timer);updateHUD();if(coins>=10)nextLevel();
+    }
+    if(y>innerHeight){coin.remove();clearInterval(timer);}
+  },40);
 }
-
-
-/* CREATE COIN */
-
-function makeCoin(){
-
- if(!playing||paused||bossActive)return;
-
- let c=document.createElement("div");
-
- c.className="coin";
-
- c.style.left=(Math.random()*88+5)+"%";
- c.style.top="-40px";
-
- game.appendChild(c);
-
- let y=-40;
-
- let speedY=3;
-
- let timer=setInterval(()=>{
-
-  if(!playing){
-
-   c.remove();
-   clearInterval(timer);
-   return;
-
-  }
-
-  if(paused)return;
-
-  y+=speedY;
-
-  c.style.top=y+"px";
-
-  let a=c.getBoundingClientRect();
-  let p=player.getBoundingClientRect();
-
-  if(
-   a.left<p.right &&
-   a.right>p.left &&
-   a.top<p.bottom &&
-   a.bottom>p.top
-  ){
-
-   coins++;
-
-   beep(750);
-
-   c.remove();
-   clearInterval(timer);
-
-   updateHUD();
-
-   if(coins>=10){
-    nextLevel();
-   }
-
-  }
-
-  if(y>innerHeight){
-
-   c.remove();
-   clearInterval(timer);
-
-  }
-
- },40);
-
+function createPower(){
+  if(!playing||paused||bossActive)return;
+  const power=document.createElement("div");power.className="power";power.innerText="⚡";power.style.left=(Math.random()*82+5)+"%";power.style.top="-50px";game.appendChild(power);
+  let y=-50;
+  const timer=setInterval(()=>{
+    if(!playing){power.remove();clearInterval(timer);return}if(paused)return;y+=2.5;power.style.top=y+"px";
+    const a=power.getBoundingClientRect(),p=player.getBoundingClientRect();
+    if(a.left<p.right&&a.right>p.left&&a.top<p.bottom&&a.bottom>p.top){power.remove();clearInterval(timer);activatePower();}
+    if(y>innerHeight){power.remove();clearInterval(timer);}
+  },40);
 }
-
-
-/* POWER */
-
-function makePower(){
-
- if(!playing||paused||bossActive)return;
-
- let x=document.createElement("div");
-
- x.className="power";
- x.innerText="⚡";
-
- x.style.left=(Math.random()*82+5)+"%";
- x.style.top="-50px";
-
- game.appendChild(x);
-
- let y=-50;
-
- let timer=setInterval(()=>{
-
-  if(!playing){
-
-   x.remove();
-   clearInterval(timer);
-   return;
-
-  }
-
-  if(paused)return;
-
-  y+=2.3;
-
-  x.style.top=y+"px";
-
-  let a=x.getBoundingClientRect();
-  let p=player.getBoundingClientRect();
-
-  if(
-   a.left<p.right &&
-   a.right>p.left &&
-   a.top<p.bottom &&
-   a.bottom>p.top
-  ){
-
-   activatePower();
-
-   x.remove();
-   clearInterval(timer);
-
-  }
-
-  if(y>innerHeight){
-
-   x.remove();
-   clearInterval(timer);
-
-  }
-
- },40);
-
-}
-
-
-/* POWER EFFECT */
-
 function activatePower(){
-
- beep(1000);
-
- if(Math.random()<.5){
-
-  shield=true;
-  player.classList.add("shield");
-
-  message.innerText="🛡️ SHIELD!";
-
-  updateHUD();
-
-  setTimeout(()=>{
-
-   shield=false;
-   player.classList.remove("shield");
-
-   message.innerText="";
-   updateHUD();
-
-  },8000);
-
- }
-
- else{
-
-  speed=true;
-
-  message.innerText="⚡ SPEED!";
-
-  updateHUD();
-
-  setTimeout(()=>{
-
-   speed=false;
-
-   message.innerText="";
-   updateHUD();
-
-  },7000);
-
- }
-
+  sound(1000);
+  if(Math.random()<.5){
+    shield=true;player.classList.add("shield");message.innerText="🛡️ SHIELD!";updateHUD();
+    setTimeout(()=>{shield=false;player.classList.remove("shield");message.innerText="";updateHUD()},7000);
+  }else{
+    speedPower=true;message.innerText="⚡ SPEED!";updateHUD();
+    setTimeout(()=>{speedPower=false;message.innerText="";updateHUD()},7000);
+  }
 }
-
-
-/* ENEMY */
-
-function makeEnemy(){
-
- if(!playing||paused||bossActive)return;
-
- let e=document.createElement("div");
-
- let r=Math.random();
-
- if(r<.55){
-
-  e.className="enemy basic";
-  e.innerText="👾";
-  e.dataset.hp=2;
-  e.dataset.max=2;
-
- }
-
- else if(r<.82){
-
-  e.className="enemy fast";
-  e.innerText="👹";
-  e.dataset.hp=1;
-  e.dataset.max=1;
-
- }
-
- else{
-
-  e.className="enemy tank";
-  e.innerText="🤖";
-  e.dataset.hp=4;
-  e.dataset.max=4;
-
- }
-
- let hp=document.createElement("div");
- hp.className="hp";
-
- let bar=document.createElement("div");
- bar.className="hpbar";
-
- hp.appendChild(bar);
- e.appendChild(hp);
-
- e.style.left=(Math.random()*88+5)+"%";
- e.style.top="-80px";
-
- game.appendChild(e);
-
- let y=-80;
-
- let enemySpeed=
-  Math.min(5,
-   2+(level*.006)+(r<.82?1:0)
-  );
-
- let timer=setInterval(()=>{
-
-  if(!playing){
-
-   e.remove();
-   clearInterval(timer);
-   return;
-
-  }
-
-  if(paused)return;
-
-  y+=enemySpeed;
-
-  e.style.top=y+"px";
-
-  let a=e.getBoundingClientRect();
-  let p=player.getBoundingClientRect();
-
-  if(
-   a.left<p.right &&
-   a.right>p.left &&
-   a.top<p.bottom &&
-   a.bottom>p.top
-  ){
-
-   if(!jumping){
-
-    if(shield){
-
-     effect(a.left,a.top,"🛡️");
-     beep(850);
-
+function createEnemy(){
+  if(!playing||paused||bossActive)return;
+  const enemy=document.createElement("div"),type=Math.random();
+  if(type<.55){enemy.className="enemy basic";enemy.innerText="👾"}
+  else if(type<.82){enemy.className="enemy fast";enemy.innerText="👹"}
+  else{enemy.className="enemy tank";enemy.innerText="🤖"}
+  enemy.style.left=(Math.random()*88+5)+"%";enemy.style.top="-80px";game.appendChild(enemy);
+  let y=-80,speed=2+level*.005;if(type<.82)speed+=1;if(speed>5)speed=5;
+  const timer=setInterval(()=>{
+    if(!playing){enemy.remove();clearInterval(timer);return}if(paused)return;y+=speed;enemy.style.top=y+"px";
+    const e=enemy.getBoundingClientRect(),p=player.getBoundingClientRect();
+    if(e.left<p.right&&e.right>p.left&&e.top<p.bottom&&e.bottom>p.top&&!jumping){
+      if(shield){createEffect(e.left,e.top,"🛡️");sound(850)}
+      else{lives--;createEffect(p.left,p.top,"💔");sound(150);updateHUD();if(lives<=0)gameOver()}
+      enemy.remove();clearInterval(timer);
     }
-
-    else{
-
-     lives--;
-
-     effect(p.left,p.top,"💔");
-
-     updateHUD();
-
-     if(lives<=0){
-      gameOver();
-     }
-
-    }
-
-    e.remove();
-    clearInterval(timer);
-
-   }
-
-  }
-
-  if(y>innerHeight){
-
-   e.remove();
-   clearInterval(timer);
-
-  }
-
- },40);
-
+    if(y>innerHeight){enemy.remove();clearInterval(timer);}
+  },40);
 }
-
-
-/* LEVEL */
-
 function nextLevel(){
-
- if(level>=MAX_LEVEL){
-
-  win();
-  return;
-
- }
-
- level++;
-
- coins=0;
-
- updateWorld();
- updateHUD();
-
- beep(900);
-
- message.innerText="🚀 LEVEL "+level;
-
- setTimeout(()=>{
-  message.innerText="";
- },1000);
-
- if(level%50===0){
-
-  setTimeout(startBoss,600);
-
- }
-
+  if(level>=MAX_LEVEL){winGame();return}
+  level++;coins=0;updateWorld();updateHUD();sound(900);message.innerText="🚀 LEVEL "+level;
+  setTimeout(()=>message.innerText="",1000);
+  if(level%50===0)setTimeout(startBoss,700);
 }
-
-
-/* BOSS */
-
 function startBoss(){
-
- if(!playing)return;
-
- bossActive=true;
- bossHealth=10;
-
- boss.style.display="block";
- bossHP.style.display="block";
-
- bossBar.style.width="100%";
-
- message.innerText="👹 BOSS FIGHT!";
-
- beep(100);
-
+  if(!playing)return;bossActive=true;bossHP=10;boss.style.display="block";bossBarBox.style.display="block";bossBar.style.width="100%";message.innerText="👹 BOSS FIGHT!";sound(100);
 }
-
-
 function damageBoss(){
-
- bossHealth--;
-
- bossBar.style.width=(bossHealth*10)+"%";
-
- effect(
-  boss.getBoundingClientRect().left+40,
-  boss.getBoundingClientRect().top+20,
-  "💥"
- );
-
- beep(300);
-
- if(bossHealth<=0){
-
-  bossActive=false;
-
-  boss.style.display="none";
-  bossHP.style.display="none";
-
-  message.innerText="🏆 BOSS DEFEATED!";
-
-  beep(1000);
-
-  setTimeout(()=>{
-
-   level++;
-   coins=0;
-
-   updateWorld();
-   updateHUD();
-
-   message.innerText="🚀 LEVEL "+level;
-
-   setTimeout(()=>{
-    message.innerText="";
-   },1000);
-
-  },1000);
-
- }
-
+  bossHP--;bossBar.style.width=(bossHP*10)+"%";const b=boss.getBoundingClientRect();createEffect(b.left+40,b.top+30,"💥");sound(300);
+  if(bossHP<=0){
+    bossActive=false;boss.style.display="none";bossBarBox.style.display="none";message.innerText="🏆 BOSS DEFEATED!";sound(1000);
+    setTimeout(()=>{if(!playing)return;level++;coins=0;updateWorld();updateHUD();message.innerText="🚀 LEVEL "+level;setTimeout(()=>message.innerText="",1000)},1000);
+  }
 }
-
-
-/* GAME OVER */
-
-function gameOver(){
-
- playing=false;
-
- message.innerText="💀 GAME OVER";
-
- restartBtn.style.display="block";
-
-}
-
-
-/* WIN */
-
-function win(){
-
- playing=false;
-
- message.innerText=
-  "🏆 1000 LEVELS COMPLETE! 🎉";
-
- restartBtn.style.displa
+function gameOver(){playing=false;message.innerText="💀 GAME OVER";restartButton.style.display="block";}
+function winGame(){playing=false;message.innerText="🏆 1000 LEVELS COMPLETE! 🎉";restartButton.style.display="block";}
+function restartGame(){location.reload();}
+function togglePause(){if(!playing)return;paused=!paused;pauseScreen.style.display=paused?"flex":"none";}
+function goMenu(){playing=false;paused=false;pauseScreen.style.display="none";menu.style.display="flex";}
+function openHowToPlay(){document.getElementById("howPanel").style.display="block";}
+function openSettings(){document.getElementById("settingsPanel").style.display="block";}
+function closePanels(){document.getElementById("howPanel").style.display="none";document.getElementById("settingsPanel").style.display="none";}
+document.addEventListener("keydown",e=>{
+  if(e.key==="ArrowLeft")moveLeft();if(e.key==="ArrowRight")moveRight();if(e.key==="ArrowUp"||e.key===" ")jump();if(e.key.toLowerCase()==="z")attack();if(e.key.toLowerCase()==="p")togglePause();
+});
+setInterval(()=>{if(playing&&!paused&&!bossActive)createCoin()},850);
+setInterval(()=>{if(playing&&!paused&&!bossActive)createEnemy()},1500);
+setInterval(()=>{if(playing&&!paused&&!bossActive&&Math.random()<.3)createPower()},4500);
 </script>
 </body>
 </html>
